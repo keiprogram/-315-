@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>古文単語 暗記学習</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        #card {
+            background-color: #fff;
+            width: 300px;
+            height: 200px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 24px;
+            padding: 20px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            user-select: none;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+        #rangeInput {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>古文単語 暗記学習</h1>
+    <div id="card">タップして意味表示</div>
+    <div id="controls">
+        学習範囲: <input type="number" id="startIndex" value="1" min="1" max="315"> 〜 <input type="number" id="endIndex" value="10" min="1" max="315">
+        <button id="startButton">開始</button>
+    </div>
+
+    <script>
+        // 単語データ例（本番は全315語に拡張）
+        const words = [
+            { word: '見る', meaning: '思う、関係を結ぶ、面倒を見る' },
+            { word: '見す', meaning: '結婚させる' },
+            { word: '見ゆ', meaning: '見える・思われる、見せる、結婚する' },
+            { word: 'かいまみる', meaning: 'のぞき見る' },
+            { word: 'よばふ', meaning: '呼び続ける、求婚する' },
+            { word: '好く', meaning: '風流を好む' },
+            { word: 'わたる', meaning: '通る、いらっしゃる、〜続ける、一面に' },
+            { word: 'ありく', meaning: '出歩く、〜しまわる、〜続ける' },
+            { word: 'おこなふ', meaning: '仏道修行をする' },
+            { word: 'なやむ', meaning: '病気になる' }
+            // ... 残りの315語はこの形式で追加可能
+        ];
+
+        let currentIndex = 0;
+        let selectedWords = [];
+        let showMeaning = false;
+
+        const card = document.getElementById('card');
+
+        function showCard() {
+            const wordObj = selectedWords[currentIndex];
+            card.textContent = showMeaning ? wordObj.meaning : wordObj.word;
+        }
+
+        function nextCard() {
+            currentIndex++;
+            if (currentIndex >= selectedWords.length) {
+                alert('学習終了！');
+                currentIndex = 0;
+            }
+            showMeaning = false;
+            showCard();
+        }
+
+        card.addEventListener('click', () => {
+            showMeaning = !showMeaning;
+            showCard();
+        });
+
+        // スワイプ検出
+        let startX = 0;
+        card.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+
+        card.addEventListener('touchend', (e) => {
+            const endX = e.changedTouches[0].clientX;
+            const diff = endX - startX;
+            if (diff > 50) {
+                console.log('正解');
+                nextCard();
+            } else if (diff < -50) {
+                console.log('不正解');
+                nextCard();
+            }
+        });
+
+        // 学習範囲設定
+        document.getElementById('startButton').addEventListener('click', () => {
+            const start = parseInt(document.getElementById('startIndex').value) - 1;
+            const end = parseInt(document.getElementById('endIndex').value);
+            selectedWords = words.slice(start, end);
+            currentIndex = 0;
+            showMeaning = false;
+            showCard();
+        });
+
+    </script>
+
+</body>
+</html>
